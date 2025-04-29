@@ -50,3 +50,5 @@ javadoc_deploy.pub
 !.vscode/settings.json
 !.vscode/JME_style.xml
 !.vscode/extensions.json
+jme3-examples/src/main/java/jme3test/Import/LibraryTest.java
+/jme3-examples/Import/*

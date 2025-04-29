@@ -35,12 +35,16 @@ package jme3test;
 import com.jme3.app.LegacyApplication;
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.JmeContext;
+
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -65,12 +69,17 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import com.sun.tools.javac.code.Scope;
+
+import jdk.internal.org.jline.reader.impl.completer.FileNameCompleter;
 
 /**
  * Class with a main method that displays a dialog to choose any jME demo to be
@@ -263,6 +272,55 @@ public class TestChooser extends JFrame {
             }
         };
     }
+    private void importTest(String fileString) {//importing new test from file system
+        //verify the file is a valid class file
+        Path filePath = Paths.get(fileString);
+        System.out.println("Import file path is: " + filePath);
+        if (filePath.toString().endsWith(".java") && filePath.toString().contains("Test")) {
+            //import the new test file to the testing folder
+            try {
+                Path targetPath = Paths.get( "jme3-examples\\src\\main\\java\\jme3test\\Import\\" + filePath.getFileName());
+                System.out.println("TP= " + targetPath);
+                if( targetPath.toFile().exists()){
+                    System.out.println("Target path exists");
+                    System.out.println(filePath);
+                }
+                Files.copy(filePath, targetPath);
+                //inform user the test was imported successfully
+                JOptionPane.showMessageDialog(
+                        rootPane,
+                        "Test imported and cloned successfully! at " + targetPath,
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                //inform user to reaload to see changes
+                JOptionPane.showMessageDialog(
+                        rootPane,
+                        "Please reload the test chooser to see the changes!",
+                        "Info",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+
+                } catch (IOException e) {
+                JOptionPane.showMessageDialog(
+                        rootPane,
+                        "Failed to import test!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
+        } else {
+            System.err.println("Invalid file type: " + filePath);
+            JOptionPane.showMessageDialog(
+                    rootPane,
+                    "Not a valid java file!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
 
     private void startApp(final List<Class<?>> appClass) {
         if (appClass == null || appClass.isEmpty()) {
@@ -422,6 +480,76 @@ public class TestChooser extends JFrame {
                 }
             }
         );
+        //import button for importing new tests
+        final JButton importButton = new JButton("Import");
+        importButton.setMnemonic('I');
+        buttonPanel.add(importButton);
+        importButton.addActionListener(
+                new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //prompting user to enter the path of the test to import
+                String FileString = JOptionPane.showInputDialog("Enter the path of the test to import:");
+                if (FileString != null && !FileString.isEmpty()) {
+                    //if the user enters a valid path, import the test
+                    try {
+                        File file = new File(FileString.trim());
+                        if (!file.exists()) { //file does not exist
+                            JOptionPane.showMessageDialog(
+                                    rootPane,
+                                    "File not found!",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                            return;
+                        }
+                        if (!file.isFile()) { //file is not a file
+                            JOptionPane.showMessageDialog(
+                                    rootPane,
+                                    "Not a valid file!",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                            return;
+                        }
+                        if (!FileString.contains("Test")) { //file is not a test file
+                            JOptionPane.showMessageDialog(
+                                    rootPane,
+                                    "Not a valid test file!",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                            return;
+                        }
+                    } catch (Exception ex) { //invalid path
+                        JOptionPane.showMessageDialog(
+                                rootPane,
+                                "Invalid path!",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                        return;
+
+                    }
+                    if (FileString.isEmpty()) {
+                        JOptionPane.showMessageDialog(
+                                rootPane,
+                                "File path cannot be empty!",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                        return;
+
+                    }
+                    importTest(FileString);
+                    
+                }
+
+            }
+        }
+        );
+
+
 
         pack();
         center();
