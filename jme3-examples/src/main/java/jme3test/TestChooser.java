@@ -292,23 +292,24 @@ public class TestChooser extends JFrame {
                 //copy the file to the target path
                 Files.copy(sourcePath, targetPath);
                 
-                //--example code for updating package declaration (unfinished)--
+                /* 
+                //--example code for updating package declaration/ maybe sorting in the future (unfinished)--
                 //update the package declaration in the file
-                //Path filePath = Paths(sourcePath.toString());
-               // String content = Files.readString(targetPath);
-                //if(content.contains("package .*;")){
-                    //System.out.println("Package declaration found.");
-                    //content = content.replace("package .*;", "package jme3test.Import;");
-                    //Files.write(targetPath, content.getBytes());//write to file
-            //}
-            //else if(!content.contains("package .*;")){
-               // System.out.println("Package declaration not found.");
-               // content = content.replace("*/", "*/\npackage jme3test.Import;");
-                //Files.write(targetPath, content.getBytes());//write to file
-           //}  
+                Path filePath = Paths(sourcePath.toString());
+               String content = Files.readString(targetPath);
+                if(content.contains("package .*;")){
+                    System.out.println("Package declaration found.");
+                    content = content.replace("package .*;", "package jme3test.Import;");
+                    Files.write(targetPath, content.getBytes());//write to file
+            }
+            else if(!content.contains("package .*;")){
+                System.out.println("Package declaration not found.");
+                content = content.replace("", "\npackage jme3test.Import;");
+                Files.write(targetPath, content.getBytes());//write to file
+           }  
                 //create a new file with the same name in the target path
-                //Path newFilePath = Paths.get("jme3-examples\\src\\main\\java\\jme3test\\Import\\" + sourcePath.getFileName().toString().replace(".java", "Clone.java"));
-            
+                Path newFilePath = Paths.get("jme3-examples\\src\\main\\java\\jme3test\\Import\\" + sourcePath.getFileName().toString().replace(".java", "Clone.java"));
+            */
                 //inform user the test was imported successfully
                 
                 JOptionPane.showMessageDialog(
