@@ -69,6 +69,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -274,19 +275,42 @@ public class TestChooser extends JFrame {
     }
     private void importTest(String fileString) {//importing new test from file system
         //verify the file is a valid class file
-        Path filePath = Paths.get(fileString);
-        System.out.println("Import file path is: " + filePath);
-        if (filePath.toString().endsWith(".java") && filePath.toString().contains("Test")) {
+        Path sourcePath = Paths.get(fileString);
+       //Path filePath = Paths.get(fileString);
+       // String content = Files.readString(filePath);
+        System.out.println("Import file path is: " + sourcePath);
+        if (sourcePath.toString().endsWith(".java") && sourcePath.toString().contains("Test")) {
             //import the new test file to the testing folder
             try {
-                Path targetPath = Paths.get( "jme3-examples\\src\\main\\java\\jme3test\\Import\\" + filePath.getFileName());
+                Path targetPath = Paths.get( "jme3-examples\\src\\main\\java\\jme3test\\Import\\" + sourcePath.getFileName());
                 System.out.println("TP= " + targetPath);
                 if( targetPath.toFile().exists()){
-                    System.out.println("Target path exists");
-                    System.out.println(filePath);
+                    System.out.println("Target path exists.");
+                    System.out.println("Source Path: " + sourcePath);
                 }
-                Files.copy(filePath, targetPath);
+                
+                //copy the file to the target path
+                Files.copy(sourcePath, targetPath);
+                
+                //--example code for updating package declaration (unfinished)--
+                //update the package declaration in the file
+                //Path filePath = Paths(sourcePath.toString());
+               // String content = Files.readString(targetPath);
+                //if(content.contains("package .*;")){
+                    //System.out.println("Package declaration found.");
+                    //content = content.replace("package .*;", "package jme3test.Import;");
+                    //Files.write(targetPath, content.getBytes());//write to file
+            //}
+            //else if(!content.contains("package .*;")){
+               // System.out.println("Package declaration not found.");
+               // content = content.replace("*/", "*/\npackage jme3test.Import;");
+                //Files.write(targetPath, content.getBytes());//write to file
+           //}  
+                //create a new file with the same name in the target path
+                //Path newFilePath = Paths.get("jme3-examples\\src\\main\\java\\jme3test\\Import\\" + sourcePath.getFileName().toString().replace(".java", "Clone.java"));
+            
                 //inform user the test was imported successfully
+                
                 JOptionPane.showMessageDialog(
                         rootPane,
                         "Test imported and cloned successfully! at " + targetPath,
@@ -296,7 +320,7 @@ public class TestChooser extends JFrame {
                 //inform user to reaload to see changes
                 JOptionPane.showMessageDialog(
                         rootPane,
-                        "Please reload the test chooser to see the changes!",
+                        "Please reload the test chooser and update package declarations to see the changes!",
                         "Info",
                         JOptionPane.INFORMATION_MESSAGE
                 );
@@ -312,7 +336,7 @@ public class TestChooser extends JFrame {
             }
 
         } else {
-            System.err.println("Invalid file type: " + filePath);
+            System.err.println("Invalid file type: " + sourcePath);
             JOptionPane.showMessageDialog(
                     rootPane,
                     "Not a valid java file!",
@@ -489,7 +513,7 @@ public class TestChooser extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //prompting user to enter the path of the test to import
-                String FileString = JOptionPane.showInputDialog("Enter the path of the test to import:");
+                String FileString = JOptionPane.showInputDialog("Enter the path of the test to import:").trim().replace("\"","");
                 if (FileString != null && !FileString.isEmpty()) {
                     //if the user enters a valid path, import the test
                     try {
@@ -653,7 +677,7 @@ public class TestChooser extends JFrame {
         setVisible(true);
     }
 
-    protected void addDisplayedClasses(Set<Class<?>> classes) {
+    private void addDisplayedClasses(Set<Class<?>> classes) {
         find("jme3test", true, classes);
     }
 

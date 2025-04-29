@@ -52,3 +52,5 @@ javadoc_deploy.pub
 !.vscode/extensions.json
 jme3-examples/src/main/java/jme3test/Import/LibraryTest.java
 /jme3-examples/Import/*
+jme3-examples/src/main/java/jme3test/Import/TestLineWidthRenderState.java
+jme3-examples/src/main/java/jme3test/Import/*
